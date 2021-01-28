@@ -1,3 +1,6 @@
+import random
+from util import Stack
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -42,11 +45,24 @@ class SocialGraph:
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(num_users):
+            self.add_user(f"User{i}")
 
         # Create friendships
+        friendships = []
+        for user_id in self.users:
+
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                friendships.append((user_id, friend_id))
+        
+        random.shuffle(friendships)                                 # shuffles friendships
+
+        for i in range(0, num_users * avg_friendships // 2):        # decides how many edges / connections we are going to make
+            friendship = friendships[i]                             # gets very first friendship in friendship list
+            self.add_friendship(friendship[0], friendship[1])       # creates friendships
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -58,7 +74,24 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        
+        s = Stack()
+
+        def get_neighbors(id):
+            return self.friendships[id]                     # returns all friendships for specific user with id
+
+        s.push(user_id)
+
+        while s.size() > 0:
+            user = s.pop()
+
+            if user not in visited:
+                visited[user] = []                          # visited = dictionary, user = key, value will be path (currently an empty list)
+
+                for neighbor in get_neighbors(user):
+                    s.push(neighbor)
+                    visited[user].append(neighbor)
+
         return visited
 
 
